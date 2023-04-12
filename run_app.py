@@ -3,10 +3,10 @@ import pandas as pd
 # import matplotlib.pyplot as plt
 import streamlit as st
 import pickle
-import folium
-from streamlit_folium import st_folium
+# import folium
+# from streamlit_folium import st_folium
 from datetime import datetime
-# from PIL import Image
+from PIL import Image
 
 # タイトル
 st.title('ランニングアプリβ版_街道編')
@@ -102,8 +102,8 @@ st.progress(total_rate,text=f'全体の{total_rate*100:,.1f}%')
 
 # 画像の表示
 # col1, col2 = st.columns(2)
-# image = Image.open(f'pic/{shukuba}.jpeg')
-# col1.image(image, caption=f'{shukuba}',use_column_width=True)
+image = Image.open(f'pic/{shukuba}.jpeg')
+st.image(image, caption=f'{shukuba}',use_column_width=True)
 
 
 # 位置情報の取り込みと地図の表示
@@ -111,37 +111,37 @@ pd.options.display.float_format = '{:.0f}'.format # 小数点以下を丸め処�
 df_place = pd.read_csv('csv/宿場町.csv',encoding='cp932',index_col=['宿番号']) # 宿場町位置情報の取り込み
 st.table(df_place.loc[df_place['宿名']==shukuba,:'旅籠数(軒)'])
 
-with st.spinner('読み込み中...'):
-    # 地図の中心の緯度/経度、タイル、初期のズームサイズを指定
-    m = folium.Map(
-        # 地図の中心位置の指定
-        location=[df_place.loc[df_place['宿名']==shukuba,'fY'], df_place.loc[df_place['宿名']==shukuba,'fX']], 
-        # タイル、アトリビュートの指定
-        tiles='https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',
-        attr='宿場町',
-        # ズームを指定
-        zoom_start=14
-    )
+# with st.spinner('読み込み中...'):
+#     # 地図の中心の緯度/経度、タイル、初期のズームサイズを指定
+#     m = folium.Map(
+#         # 地図の中心位置の指定
+#         location=[df_place.loc[df_place['宿名']==shukuba,'fY'], df_place.loc[df_place['宿名']==shukuba,'fX']], 
+#         # タイル、アトリビュートの指定
+#         tiles='https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',
+#         attr='宿場町',
+#         # ズームを指定
+#         zoom_start=14
+#     )
 
-    # 読み込んだデータ(緯度・経度、ポップアップ用文字、アイコンを表示)
-    for i, row in df_place.iterrows():
-        # ポップアップの作成(宿名＋住所)
-        pop=f"{row['宿名']}({row['現・住所']})"
-        folium.Marker(
-            # 緯度と経度を指定
-            location=[row['fY'], row['fX']],
-            # ツールチップの指定(都道府県名)
-            tooltip=row['宿名'],
-            # ポップアップの指定
-            popup=folium.Popup(pop, max_width=300),
-            # アイコンの指定(アイコン、色)
-            icon=folium.Icon(icon="home",icon_color="white", color="red")
-        ).add_to(m)
+#     # 読み込んだデータ(緯度・経度、ポップアップ用文字、アイコンを表示)
+#     for i, row in df_place.iterrows():
+#         # ポップアップの作成(宿名＋住所)
+#         pop=f"{row['宿名']}({row['現・住所']})"
+#         folium.Marker(
+#             # 緯度と経度を指定
+#             location=[row['fY'], row['fX']],
+#             # ツールチップの指定(都道府県名)
+#             tooltip=row['宿名'],
+#             # ポップアップの指定
+#             popup=folium.Popup(pop, max_width=300),
+#             # アイコンの指定(アイコン、色)
+#             icon=folium.Icon(icon="home",icon_color="white", color="red")
+#         ).add_to(m)
     
-    # with col2:
-st_data = st_folium(m, width=350, height=300)
+#     # with col2:
+# st_data = st_folium(m, width=350, height=300)
 
-st.success('反映完了！')
+# st.success('反映完了！')
 
 # いいねするユーザの選択
 good_user = st.radio('いいねするユーザ',([key for key in rank_dic.keys() if key != 'user_']))
