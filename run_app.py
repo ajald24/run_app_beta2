@@ -15,8 +15,8 @@ st.title('ランニングアプリβ版_街道編')
 # 辞書をファイルとして永続化する
 # if "st.session_state['users_dic']" not in locals(): # st.session_state['users_dic']の存在確認
 
-if 'users_dic' not in st.session_state:
-    st.session_state['users_dic'] = {'新規登録/削除':[0,'中山道', 0,'2023/04/09',''],'user_':[0,'中山道', 0,'2023/04/09','','']}
+# if 'users_dic' not in st.session_state:
+#     st.session_state['users_dic'] = {'新規登録/削除':[0,'中山道', 0,'2023/04/09',''],'user_':[0,'中山道', 0,'2023/04/09','','']}
 # 後でリセットボタン削除
 if st.sidebar.button('リセット'):
     st.session_state['users_dic'] = {'新規登録/削除':[0,'中山道', 0,'2023/04/09',''],'user_':[0,'中山道', 0,'2023/04/09','','']}
