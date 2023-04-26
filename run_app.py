@@ -30,7 +30,7 @@ with open('user_dic.pkl', 'rb') as f:
 
 # 新規ユーザの登録
 # if st.sidebar.button('新規登録'):
-if "st.session_state['users_dic']" in locals():
+if  st.session_state['users_dic'].key() == []:
     user_input = st.sidebar.selectbox("ユーザID",[i for i in st.session_state['users_dic'].keys() if i!='user_'])
 else:
     user_input = st.sidebar.selectbox("ユーザID",['新規登録/削除'])
