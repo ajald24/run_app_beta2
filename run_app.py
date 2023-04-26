@@ -33,7 +33,7 @@ st.write(st.session_state['users_dic'])
 # if st.sidebar.button('新規登録'):
 # if  st.session_state['users_dic'].keys() == []:
 if '新規登録/削除' not in st.session_state['users_dic'].keys():
-    st.session_state['users_dic']['新規登録/削除'] = [0,'中山道', 0,'2023/04/09','']
+    st.session_state['users_dic']['新規登録/削除'] = [0,'中山道', 0,'','','']
 user_input = st.sidebar.selectbox("ユーザID",[i for i in st.session_state['users_dic'].keys() if i!='user_'])
 # else:
 #     user_input = st.sidebar.selectbox("ユーザID",['新規登録/削除'])
