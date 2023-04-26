@@ -18,8 +18,8 @@ st.title('ランニングアプリβ版_街道編')
 if 'users_dic' not in st.session_state:
     st.session_state['users_dic'] = {'新規登録/削除':[0,'中山道', 0,'2023/04/09',''],'user_':[0,'中山道', 0,'2023/04/09','','']}
 # 後でリセットボタン削除
-# if st.sidebar.button('リセット'):
-#     st.session_state['users_dic'] = {'新規登録/削除':[0,'中山道', 0,'2023/04/09',''],'user_':[0,'中山道', 0,'2023/04/09','','']}
+if st.sidebar.button('リセット'):
+    st.session_state['users_dic'] = {'新規登録/削除':[0,'中山道', 0,'2023/04/09',''],'user_':[0,'中山道', 0,'2023/04/09','','']}
     with open("user_dic.pkl","wb") as f:
         pickle.dump(st.session_state['users_dic'], f)
     # st.session_state['users_dic']["user_"] = [0,'中山道', 0,'2023/04/09',''] # [累計走行距離, 街道, 街道走行距離, 記録開始日付,いいね数]のリスト
