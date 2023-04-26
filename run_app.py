@@ -34,6 +34,7 @@ if "st.session_state['users_dic']" in locals():
     user_input = st.sidebar.selectbox("ユーザID",[i for i in st.session_state['users_dic'].keys() if i!='user_'])
 else:
     user_input = st.sidebar.selectbox("ユーザID",['新規登録/削除'])
+    st.session_state['users_dic'] = {'新規登録/削除':[0,'中山道', 0,'2023/04/09',''],'user_':[0,'中山道', 0,'2023/04/09','','']}
 if user_input == '新規登録/削除':
     new_id = st.sidebar.text_input("新規IDを入力してください")
     reg_button =  st.sidebar.button('ユーザ登録')
