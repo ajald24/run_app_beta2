@@ -23,14 +23,10 @@ st.title('ランニングアプリβ版_街道編')
 #     with open("user_dic.pkl","wb") as f:
 #         pickle.dump(st.session_state['users_dic'], f)
     # st.session_state['users_dic']["user_"] = [0,'中山道', 0,'2023/04/09',''] # [累計走行距離, 街道, 街道走行距離, 記録開始日付,いいね数]のリスト
-if st.sidebar.text_input('') == 'run_app_beta2_reset':
-    st.session_state['users_dic'] = {'新規登録/削除':[0,'中山道', 0,'2023/04/09',''],'user_':[0,'中山道', 0,'2023/04/09','','']}
-    with open("user_dic.pkl","wb") as f:
-        pickle.dump(st.session_state['users_dic'], f)
+
 # 辞書のインポートと読み込み
-else:
-    with open('user_dic.pkl', 'rb') as f:
-        st.session_state['users_dic'] = pickle.load(f)
+with open('user_dic.pkl', 'rb') as f:
+    st.session_state['users_dic'] = pickle.load(f)
 
 # 新規ユーザの登録
 # if st.sidebar.button('新規登録'):
@@ -211,4 +207,8 @@ st.dataframe(total_ranking.head(10)) # 上位10件を表示
 # ax.bar(total_ranking.index,total_ranking['累計走行距離'])
 # st.pyplot(fig)
 
+if st.sidebar.text_input('') == 'run_app_beta2_reset':
+    st.session_state['users_dic'] = {'新規登録/削除':[0,'中山道', 0,'2023/04/09',''],'user_':[0,'中山道', 0,'2023/04/09','','']}
+    with open("user_dic.pkl","wb") as f:
+        pickle.dump(st.session_state['users_dic'], f)
 
