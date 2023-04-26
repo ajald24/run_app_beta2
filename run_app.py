@@ -184,7 +184,7 @@ good_button = st.button('👍')
 if good_button:
     rank_dic[good_user][4] += '👍'
     # 辞書情報の上書き保存
-    with open("st.session_state['users_dic'].pkl","wb") as f:
+    with open("user_dic.pkl","wb") as f:
         pickle.dump(st.session_state['users_dic'], f)
 # 毎週月曜日の0時0分0秒にいいね数をリセット
 # if datetime.now().strftime('%A/%H:%M:%S')=='Monday/00:00:00':
