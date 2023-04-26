@@ -27,7 +27,6 @@ st.title('ランニングアプリβ版_街道編')
 # 辞書のインポートと読み込み
 with open('user_dic.pkl', 'rb') as f:
     st.session_state['users_dic'] = pickle.load(f)
-st.write(st.session_state['users_dic'])
 
 # 新規ユーザの登録
 # if st.sidebar.button('新規登録'):
