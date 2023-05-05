@@ -10,7 +10,7 @@ from PIL import Image
 import sys ;print(sys.path)
 
 # タイトル
-st.title('ランニングアプリβ版_街道編')
+st.title('ランニングアプリ_街道編')
 
 # 辞書をファイルとして永続化する
 # if "st.session_state['users_dic']" not in locals(): # st.session_state['users_dic']の存在確認
@@ -85,8 +85,10 @@ if st.sidebar.button('街道変更'):
 #     st.session_state['users_dic'][user_id][2] = temp_2
 
 # 走行距離の入力・取消と出力
+training_dic = {'ランニング':1,'自転車':0.4,'水泳':4}
+training_kind = st.selectbox('運動の種類',['ランニング','自転車','水泳'])
 try:
-    plus_distance = float(st.text_input("今回の走行距離(km)"))
+    plus_distance = float(st.text_input("今回の走行距離(km)")) * training_dic[training_kind]
 except ValueError:
     st.write('数値を入力してください')
 
