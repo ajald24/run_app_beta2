@@ -216,8 +216,7 @@ st.dataframe(total_ranking.head(10)) # 上位10件を表示
 # ax.bar(total_ranking.index,total_ranking['累計走行距離'])
 # st.pyplot(fig)
 
-if st.sidebar.button('Download'):
-    csv = total_ranking.to_csv().encode('cp932')
+csv = total_ranking.to_csv().encode('cp932')
 
 st.sidebar.download_button(
     label="Download",
