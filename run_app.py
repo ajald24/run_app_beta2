@@ -216,8 +216,13 @@ st.dataframe(total_ranking.head(10)) # 上位10件を表示
 # ax.bar(total_ranking.index,total_ranking['累計走行距離'])
 # st.pyplot(fig)
 
-# if st.sidebar.text_input('') == 'run_app_beta2_reset':
-#     st.session_state['users_dic'] = {'新規登録/削除':[0,'中山道', 0,'2023/04/09',''],'user_':[0,'中山道', 0,'2023/04/09','','']}
-#     with open("user_dic.pkl","wb") as f:
-#         pickle.dump(st.session_state['users_dic'], f)
+if st.sidebar.button('Download'):
+    csv = total_ranking.to_csv().encode('cp932')
+
+st.sidebar.download_button(
+    label="Download",
+    data=csv,
+    file_name='total_ranking.csv',
+    mime='text/csv',
+)
 
