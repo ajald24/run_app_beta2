@@ -60,8 +60,8 @@ else:
 
 
 # 辞書情報の上書き保存   
-# with open("st.session_state['users_dic'].pkl","wb") as f:
-#     pickle.dump(st.session_state['users_dic'], f)
+with open("st.session_state['users_dic'].pkl","wb") as f:
+    pickle.dump(st.session_state['users_dic'], f)
 
 # 街道の指定及び変更
 kaido = st.sidebar.selectbox('街道名',("中山道","東海道"))
