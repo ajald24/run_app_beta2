@@ -12,7 +12,7 @@ import sys ;print(sys.path)
 # タイトル
 st.title('ランニングアプリ_街道編')
 
-# 辞書をファイルとして永続化する
+# 辞書をファイルとして永続化する 
 # if "st.session_state['users_dic']" not in locals(): # st.session_state['users_dic']の存在確認
 
 # if 'users_dic' not in st.session_state:
