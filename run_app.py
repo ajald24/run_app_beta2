@@ -109,11 +109,11 @@ user_master.to_csv('user_master.csv',encoding='cp932')
 
 st.sidebar.write(f'いいね \n\n{"👍"*int(user_master.loc[user_id,"good"])}')
 # # 累計走行距離ランキングの作成
-total_ranking = user_master.copy().drop('test')
+total_ranking = user_master.copy().drop('test').drop(['course','course_distance'],axis=1)
 total_ranking.sort_values(by='total_distance',ascending=False,inplace=True)
 total_ranking['rank']=range(1,len(total_ranking)+1)
 total_ranking=total_ranking.reset_index().set_index('rank')
-total_ranking.columns=['ユーザID','累計走行距離(km)','街道','街道走行距離(km)','最終更新日（走行距離）','調子','いいね'] # カラム名の設定
+total_ranking.columns=['ユーザID','累計走行距離(km)','最終更新日（走行距離）','調子','いいね'] # カラム名の設定
 total_ranking['いいね']=total_ranking['いいね'].apply(lambda x:'👍'*int(x))
 total_ranking['調子']=total_ranking['調子'].map(feeling_dic2)
 st.dataframe(total_ranking.head(10)) # 上位10件を表示 
