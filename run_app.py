@@ -6,7 +6,7 @@ from PIL import Image
 import sys ;print(sys.path)
 
 # タイトル
-st.title('ランニングアプリ_街道編')
+st.title('（※メンテナンス中）ランニングアプリ_街道編')
 
 user_master = pd.read_csv('user_master.csv',encoding='cp932',index_col=['user_name'])
 
