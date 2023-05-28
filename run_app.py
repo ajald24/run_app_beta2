@@ -1,10 +1,6 @@
 # 使用するライブラリのインポート
 import pandas as pd
-# import matplotlib.pyplot as plt
 import streamlit as st
-import pickle
-# import folium
-# from streamlit_folium import st_folium
 from datetime import datetime
 from PIL import Image
 import sys ;print(sys.path)
@@ -12,113 +8,69 @@ import sys ;print(sys.path)
 # タイトル
 st.title('ランニングアプリ_街道編')
 
-# 辞書をファイルとして永続化する 
-# if "st.session_state['users_dic']" not in locals(): # st.session_state['users_dic']の存在確認
-
-# if 'users_dic' not in st.session_state:
-#     st.session_state['users_dic'] = {'新規登録/削除':[0,'中山道', 0,'2023/04/09',''],'user_':[0,'中山道', 0,'2023/04/09','','']}
-# 後でリセットボタン削除
-# if st.sidebar.button('リセット'):
-#     st.session_state['users_dic'] = {'新規登録/削除':[0,'中山道', 0,'2023/04/09',''],'user_':[0,'中山道', 0,'2023/04/09','','']}
-#     with open("user_dic.pkl","wb") as f:
-#         pickle.dump(st.session_state['users_dic'], f)
-    # st.session_state['users_dic']["user_"] = [0,'中山道', 0,'2023/04/09',''] # [累計走行距離, 街道, 街道走行距離, 記録開始日付,いいね数]のリスト
-
-# 辞書のインポートと読み込み
-with open('user_dic.pkl', 'rb') as f:
-    st.session_state['users_dic'] = pickle.load(f)
+user_master = pd.read_csv('user_master.csv',encoding='cp932',index_col=['user_name'])
 
 # 新規ユーザの登録
-# if st.sidebar.button('新規登録'):
-# if  st.session_state['users_dic'].keys() == []:
-if '新規登録/削除' not in st.session_state['users_dic'].keys():
-    st.session_state['users_dic']['新規登録/削除'] = [0,'中山道', 0,'','','']
-    st.session_state['users_dic']['user_'] = [0,'中山道', 0,'','','']
-user_input = st.sidebar.selectbox("ユーザID",[i for i in st.session_state['users_dic'].keys() if i!='user_'])
-# else:
-#     user_input = st.sidebar.selectbox("ユーザID",['新規登録/削除'])
-#     st.session_state['users_dic'] = {'新規登録/削除':[0,'中山道', 0,'2023/04/09',''],'user_':[0,'中山道', 0,'2023/04/09','','']}
+user_input = st.sidebar.selectbox("ユーザID",['新規登録/削除']+[i for i in user_master.index if i!='test'])
+
 if user_input == '新規登録/削除':
-    new_id = st.sidebar.text_input("新規IDを入力してください")
+    temp_id = st.sidebar.text_input("新規IDを入力してください")
     reg_button =  st.sidebar.button('ユーザ登録')
     del_button = st.sidebar.button('ユーザ削除')
-    temp_id = 'user_' + new_id
-    if reg_button and temp_id not in st.session_state['users_dic'].keys():
+    if reg_button and temp_id not in user_master.index and len(temp_id) != 0:
         user_id = temp_id
-        st.session_state['users_dic'][user_id] = [0,'',0,datetime.today().strftime('%Y/%m/%d'),'','']
+        user_master.loc[user_id] = [0,'',0,datetime.today().strftime('%Y/%m/%d'),'',0]
     # ユーザ削除
-    elif del_button and temp_id != 'user_' and temp_id in st.session_state['users_dic'].keys():
-        st.session_state['users_dic'].pop(temp_id) 
-        user_id = 'user_'
-    else: user_id = 'user_'
+    elif del_button and len(temp_id) != 0 and temp_id in user_master.index:
+        user_master.drop(temp_id,inplace=True) 
+        user_id = 'test'
+    else: user_id = 'test'
 else:
     user_id = user_input
-# start_date = st.session_state['users_dic'][user_id][3]
-
-
-
-
-
-# 辞書情報の上書き保存   
-with open("user_dic.pkl","wb") as f:
-    pickle.dump(st.session_state['users_dic'], f)
 
 # 街道の指定及び変更
 kaido = st.sidebar.selectbox('街道名',("中山道","東海道"))
-if st.session_state['users_dic'][user_id][1] == '':
+if user_master.loc[user_id,'course'] == '':
     try:
-        st.session_state['users_dic'][user_id][1] = kaido
+        user_master.loc[user_id,'course'] = kaido
     except NameError: # デフォルト値の設定
-        st.session_state['users_dic'][user_id][1] = '中山道'
-    course = st.session_state['users_dic'][user_id][1]
+        user_master.loc[user_id,'course'] = '中山道'
+    course = user_master.loc[user_id,'course']
 else:
-    course = st.session_state['users_dic'][user_id][1]
-    # st.markdown('#### 街道名')
-    # st.write(course)
+    course = user_master.loc[user_id,'course']
 
 if st.sidebar.button('街道変更'):
-    # temp_1,temp_2 = st.session_state['users_dic'][user_id][1:3]
-    st.session_state['users_dic'][user_id][1] = kaido
-    st.session_state['users_dic'][user_id][2] = 0
-# if st.sidebar.button('街道変更取消'):
-#     st.session_state['users_dic'][user_id][1] = temp_1
-#     st.session_state['users_dic'][user_id][2] = temp_2
+    user_master.loc[user_id,'course'] = kaido
+    user_master.loc[user_id,'course_distance'] = 0
 
 # 走行距離の入力・取消と出力
 training_dic = {'ランニング':1,'自転車':0.4,'水泳':4}
 training_kind = st.selectbox('運動の種類',['ランニング','自転車','水泳'])
 try:
-    plus_distance = float(st.text_input("今回の走行距離(km)")) * training_dic[training_kind]
+    plus_distance = round(float(st.text_input("今回の走行距離(km)")) * training_dic[training_kind],2)
 except ValueError:
     st.write('数値を入力してください')
 
 col1, col2, *cols = st.columns(9)
 
 if col1.button('登録'):
-    st.session_state['users_dic'][user_id][0] += plus_distance
-    st.session_state['users_dic'][user_id][2] += plus_distance
-    st.session_state['users_dic'][user_id][3] = datetime.today().strftime('%Y/%m/%d') + f'（↑{plus_distance}km）'
-    st.session_state['users_dic'][user_id][4] = '' # 走行距離登録ごとにいいね数がリセットされる仕様に変更
+    user_master.loc[user_id,'total_distance'] += plus_distance
+    user_master.loc[user_id,'course_distance'] += plus_distance
+    user_master.loc[user_id,'last_date'] = datetime.today().strftime('%Y/%m/%d') + f'（↑{plus_distance}km）'
+    user_master.loc[user_id,'good'] = 0 # 走行距離登録ごとにいいね数がリセットされる仕様に変更
     
 if col2.button('取消'):
-    st.session_state['users_dic'][user_id][0] = max(0,st.session_state['users_dic'][user_id][0]-plus_distance)
-    st.session_state['users_dic'][user_id][2] = max(0,st.session_state['users_dic'][user_id][2]-plus_distance)
+    user_master.loc[user_id,'total_distance'] = max(0,user_master.loc[user_id,'total_distance']-plus_distance)
+    user_master.loc[user_id,'course_distance'] = max(0,user_master.loc[user_id,'course_distance']-plus_distance)
 
-# 
-today_feeling = st.selectbox('今日の調子は？',['😊','🙂','😢','😭','🥱','🤧','✌️','♨️','💔','🐸'])
-st.session_state['users_dic'][user_id][5] = today_feeling[0]
+# # 
+feeling_dic = {'😊':0,'🙂':1,'😢':2,'😭':3,'🥱':4,'🤧':5,'✌️':6,'♨️':7,'💔':8,'🐸':9}
+feeling_dic2 = {0:'😊',1:'🙂',2:'😢',3:'😭',4:'🥱',5:'🤧',6:'✌️',7:'♨️',8:'💔',9:'🐸'}
+today_feeling = st.selectbox('今日の調子は？',feeling_dic.keys())
+user_master.loc[user_id,'feeling'] = feeling_dic[today_feeling]
 
-course_distance = st.session_state['users_dic'][user_id][2]
-total_distance = st.session_state['users_dic'][user_id][0]
-rank_dic = st.session_state['users_dic'].copy()
-
-# ランキング表に不要な情報を削除
-rank_dic.pop('新規登録/削除')
-# rank_dic = rank_dic.pop('user_01')
-
-# 辞書情報の上書き保存
-with open("user_dic.pkl","wb") as f:
-    pickle.dump(st.session_state['users_dic'], f)
+course_distance = user_master.loc[user_id,'course_distance']
+total_distance = user_master.loc[user_id,'total_distance']
 
 # 街道名による条件分岐
 if course == '中山道':
@@ -142,86 +94,35 @@ st.sidebar.write(f'累計走行距離{total_distance:,.2f}km')
 st.progress(total_rate,text=f'全体の{total_rate*100:,.1f}%')
 
 # 画像の表示
-# col1, col2 = st.columns(2)
 image = Image.open(f'pic/{shukuba}.jpeg')
 st.image(image, caption=f'{shukuba}',use_column_width=True)
 
-
-# 位置情報の取り込みと地図の表示
-pd.options.display.float_format = '{:.0f}'.format # 小数点以下を丸め処理
-df_place = pd.read_csv('csv/宿場町.csv',encoding='cp932',index_col=['宿番号']) # 宿場町位置情報の取り込み
-st.table(df_place.loc[df_place['宿名']==shukuba,:'旅籠数(軒)'])
-
-# with st.spinner('読み込み中...'):
-#     # 地図の中心の緯度/経度、タイル、初期のズームサイズを指定
-#     m = folium.Map(
-#         # 地図の中心位置の指定
-#         location=[df_place.loc[df_place['宿名']==shukuba,'fY'], df_place.loc[df_place['宿名']==shukuba,'fX']], 
-#         # タイル、アトリビュートの指定
-#         tiles='https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',
-#         attr='宿場町',
-#         # ズームを指定
-#         zoom_start=14
-#     )
-
-#     # 読み込んだデータ(緯度・経度、ポップアップ用文字、アイコンを表示)
-#     for i, row in df_place.iterrows():
-#         # ポップアップの作成(宿名＋住所)
-#         pop=f"{row['宿名']}({row['現・住所']})"
-#         folium.Marker(
-#             # 緯度と経度を指定
-#             location=[row['fY'], row['fX']],
-#             # ツールチップの指定(都道府県名)
-#             tooltip=row['宿名'],
-#             # ポップアップの指定
-#             popup=folium.Popup(pop, max_width=300),
-#             # アイコンの指定(アイコン、色)
-#             icon=folium.Icon(icon="home",icon_color="white", color="red")
-#         ).add_to(m)
-    
-#     # with col2:
-# st_data = st_folium(m, width=350, height=300)
-
-# st.success('反映完了！')
-
 # いいねするユーザの選択
-good_user = st.radio('いいねするユーザ',([i for i in rank_dic.keys() if i != 'user_']))
+good_user = st.radio('いいねするユーザ',([i for i in user_master.index if i != 'test']))
 # いいねボタン実装
 good_button = st.button('👍')
 if good_button:
-    rank_dic[good_user][4] += '👍'
-    # 辞書情報の上書き保存
-    with open("user_dic.pkl","wb") as f:
-        pickle.dump(st.session_state['users_dic'], f)
-# 毎週月曜日の0時0分0秒にいいね数をリセット
-# if datetime.now().strftime('%A/%H:%M:%S')=='Monday/00:00:00':
-# #     for user in rank_dic.keys():
-#         rank_dic[user][4] = ''  
-    # 辞書情報の上書き保存
-    # with open("st.session_state['users_dic'].pkl","wb") as f:
-    #     pickle.dump(st.session_state['users_dic'], f)  
+    user_master.loc[good_user,'good'] += 1
 
-st.sidebar.write(f'いいね \n\n{rank_dic[user_id][4]}')
-# 累計走行距離ランキングの作成
-total_ranking = pd.DataFrame(rank_dic).T # 転置
-total_ranking.reset_index(inplace=True) # indexのリセット
-total_ranking.columns=['ユーザID','累計走行距離(km)','街道','街道走行距離(km)','最終更新日（走行距離）','いいね','調子'] # カラム名の設定
-# total_ranking['いいね']=''
-total_ranking = total_ranking.loc[total_ranking['ユーザID']!='user_',['ユーザID','累計走行距離(km)','最終更新日（走行距離）','調子','いいね']]
-total_ranking.sort_values('累計走行距離(km)',ascending=False,inplace=True) # 累計走行距離が長い順に並べ替え
-total_ranking.index=total_ranking['累計走行距離(km)'].rank(ascending=False,method='min').astype(int) # ランキング(降順)の付与
-st.subheader('走行距離ランキング') # タイトル
+# 辞書情報の上書き保存
+user_master.to_csv('user_master.csv',encoding='cp932')
+
+st.sidebar.write(f'いいね \n\n{"👍"*int(user_master.loc[user_id,"good"])}')
+# # 累計走行距離ランキングの作成
+total_ranking = user_master.copy().drop('test')
+total_ranking.sort_values(by='total_distance',ascending=False,inplace=True)
+total_ranking['rank']=range(1,len(total_ranking)+1)
+total_ranking=total_ranking.reset_index().set_index('rank')
+total_ranking.columns=['ユーザID','累計走行距離(km)','街道','街道走行距離(km)','最終更新日（走行距離）','調子','いいね'] # カラム名の設定
+total_ranking['いいね']=total_ranking['いいね'].apply(lambda x:'👍'*int(x))
+total_ranking['調子']=total_ranking['調子'].map(feeling_dic2)
 st.dataframe(total_ranking.head(10)) # 上位10件を表示 
-# fig,ax = plt.subplots(figsize=(10,5))
-# ax.bar(total_ranking.index,total_ranking['累計走行距離'])
-# st.pyplot(fig)
 
-csv = total_ranking.to_csv().encode('utf-8')
+csv = user_master.to_csv().encode('cp932')
 
 st.sidebar.download_button(
     label="Download",
     data=csv,
-    file_name='total_ranking.csv',
+    file_name='user_master.csv',
     mime='text/csv',
 )
-
