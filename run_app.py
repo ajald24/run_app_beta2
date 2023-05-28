@@ -60,7 +60,7 @@ else:
 
 
 # 辞書情報の上書き保存   
-with open("st.session_state['users_dic'].pkl","wb") as f:
+with open("user_dic.pkl","wb") as f:
     pickle.dump(st.session_state['users_dic'], f)
 
 # 街道の指定及び変更
